@@ -26,13 +26,13 @@ import heapq
 
 def explain_problem():
     return (
-        "It isn't enough because it only considers the smallest travel distance from the start to every node. Meaning, it doesn't help "
+        "- It isn't enough because it only considers the smallest travel distance from the start to every node. Meaning, it doesn't help "
         "with choosing an optimal path for visiting every node before exiting.\n\n"
         
-        "After realizing the costs, the path taken from start to finish still needs to be decided while also minimizing the total fuel "
+        "- After realizing the costs, the path taken from start to finish still needs to be decided while also minimizing the total fuel "
         "consumption.\n\n"
         
-        "This requires a search because different orders lead to different fuel costs, therefore, the algorithm must be able to search from "
+        "- This requires a search because different orders lead to different fuel costs, therefore, the algorithm must be able to search from "
         "different routes to get the minimum cost."
     )
 
@@ -166,16 +166,36 @@ def dijkstra_invariant_check():
 # =============================================================================
 
 def explain_search():
-    """
-    Returns
-    -------
-    str
-        Your Part 4 README answers, written as a string.
-        Must match what you wrote in README Part 4.
+    return (
+        "Part 4:\n"
+        "- The failure mode:\n"
+        "  - A greedy strategy can fail because the locally cheapest relic "
+        "choice may create a more expensive total route later.\n\n"
 
-    TODO
-    """
-    return "TODO"
+        "- Counter-example setup:\n"
+        "  - Let's assume S connects to some relic node B with a cost of 1 "
+        "and to C with a cost of 2.\n"
+        "  - However, future paths leaving node B become more expensive, "
+        "while paths from C to the remaining relic nodes and the exit "
+        "remain cheaper overall.\n\n"
+
+        "- What greedy picks:\n"
+        "  - Greedy would choose relic B first because it is the cheapest "
+        "option that is reachable from the starting node.\n\n"
+
+        "- What optimal picks:\n"
+        "  - Instead of choosing the cheapest immediate relic, the optimal "
+        "solution would select C first to minimize the total travel cost.\n\n"
+
+        "- Why greedy loses:\n"
+        "  - Greedy loses because it only considers the current cheapest cost "
+        "and ignores how future path costs affect the overall fuel "
+        "consumption.\n\n"
+
+        "- What the Algorithm Must Explore:\n"
+        "  - The algorithm must explore different visitation orders because "
+        "each order can lead to a different total fuel cost."
+    )
 
 
 # =============================================================================
@@ -183,59 +203,100 @@ def explain_search():
 # =============================================================================
 
 def find_optimal_route(dist_table, spawn, relics, exit_node):
-    """
-    Parameters
-    ----------
-    dist_table : dict[node, dict[node, float]]
-        Output of precompute_distances.
-    spawn : node
-    relics : list[node]
-        Every node in this list must be visited at least once.
-    exit_node : node
-        The route must end here.
+    # Convert the relics into a set to help keep track of leftovers
+    relics_remaining = set()
 
-    Returns
-    -------
-    tuple[float, list[node]]
-        (minimum_fuel_cost, ordered_relic_list)
-        Returns (float('inf'), []) if no valid route exists.
+    # Adds the relics into the leftover relic set
+    for relic in relics:
+        relics_remaining.add(relic)
 
-    TODO
-    """
-    pass
+    # Stores the order in which the relics have been visited
+    relics_visited_order = []
+
+    # Initialize cost as 0, no movement so far
+    cost_so_far = 0
+
+    # best[0] contains the lowest cost that's been found
+    # best[1] contains the best relic order found
+    best = []
+    best.append(float("inf"))
+    best.append([])
+
+    # Recursive search begins from the starting point
+    _explore(dist_table, spawn, relics_remaining, relics_visited_order, cost_so_far, exit_node, best)
 
 
 def _explore(dist_table, current_loc, relics_remaining, relics_visited_order,
              cost_so_far, exit_node, best):
-    """
-    Recursive helper for find_optimal_route.
 
-    Parameters
-    ----------
-    dist_table : dict[node, dict[node, float]]
-    current_loc : node
-    relics_remaining : collection
-        Your chosen data structure from README Part 5b.
-    relics_visited_order : list[node]
-    cost_so_far : float
-    exit_node : node
-    best : list
-        Mutable container for the best solution found so far.
+    # Pruning safe --> all edge weights nonnegative
+    # Checks if current path costs more than the best solution found so far
+    if cost_so_far >= best[0]:
+        return
 
-    Returns
-    -------
-    None
-        Updates best in place.
+    # Base case - all the relics have already been visited/collected
+    no_more_relics = False
 
-    TODO
-    Implement: base case, pruning, recursive case, backtracking.
+    # Checks if there are no more relics remaining
+    if len(relics_remaining) == 0:
+        no_more_relics = True
 
-    REQUIRED: Add a 1-2 sentence comment near your pruning condition
-    explaining why it is safe (cannot skip the optimal solution).
-    This comment is graded.
-    """
-    pass
+    if no_more_relics == True:
 
+        # Gets cost from current location to exit
+        exit_cost = dist_table[current_loc][exit_node]
+
+        # Stops route if exit is unreachable
+        if exit_cost == float('inf'):
+            return
+
+        # Adds total route cost together
+        total_cost = cost_so_far
+        total_cost = total_cost + exit_cost
+
+        # Updates best solution if new route is cheaper
+        if total_cost < best[0]:
+            best[0] = total_cost
+
+            # Creates copy of current relic order
+            new_order = []
+            for visited_relic in relics_visited_order:
+                new_order.append(visited_relic)
+
+            best[1] = new_order
+
+        return
+
+    # Creates list copy so recursion can safely modify the set
+    choices = list(relics_remaining)
+
+    # Tries every remaining relic
+    for relic in choices:
+
+        # Gets travel cost to next relic
+        travel_cost = dist_table[current_loc][relic]
+
+        # Skips unreachable relics
+        if travel_cost == float('inf'):
+            continue
+
+        # Calculates updated route cost
+        new_cost = cost_so_far + travel_cost
+
+        # Removes relic from remaining set
+        relics_remaining.remove(relic)
+
+        # Adds relic into visitation order
+        relics_visited_order.append(relic)
+
+        # Recursively continue from this relic
+        _explore(dist_table, relic, relics_remaining, relics_visited_order, new_cost, exit_node, best)
+
+        # Removes last relic from current order
+        last_relic = relics_visited_order.pop()
+
+        # Adds relic back into remaining set
+        relics_remaining.add(last_relic)
 
 # =============================================================================
 # PIPELINE
@@ -324,6 +385,6 @@ def _run_tests():
 
     print("\nAll provided tests passed.")
 
-
 if __name__ == "__main__":
     _run_tests()
+

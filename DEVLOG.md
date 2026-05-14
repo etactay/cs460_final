@@ -36,9 +36,13 @@ segment wouldn't be considered for the best solution.
 
 ---
 
-## Entry 3 – [Date]: [Short description]
+## Entry 3 – [5/13]: [Search and Route Exploration]
 
-_Your entry here._
+_Today I finished Part 4 and started with the implementation for Parts 5 and 6. I worked on designing the recursive search which is used_
+_to help us look at different relic visitation orders and started in the 'explore()' helper function. One thing I did focus on was_
+_understanding how the backtracking works, particularly, the removing and re-adding relics after the recursive calls. I also inlcuded_
+_the pruning logic which skips paths  that already cost more than the best solution found so far. While doing so, I also traced the_
+_recursive calls manually because it was really easy to lost track of how the visitation order and remaining sets were changing during recursion._ 
 
 ---
 
@@ -60,9 +64,9 @@ _Your entry here._
 | Part 1: Problem Analysis | ~1             |
 | Part 2: Precomputation Design | ~5 - 6         |
 | Part 3: Algorithm Correctness | ~1             |
-| Part 4: Search Design |          |
-| Part 5: State and Search Space |                |
-| Part 6: Pruning |                |
+| Part 4: Search Design | ~0:45 - 1:00   |
+| Part 5: State and Search Space | ~3             |
+| Part 6: Pruning | ~1             |
 | Part 7: Implementation |                |
 | README and DEVLOG writing |                |
 | **Total** |                |

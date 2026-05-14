@@ -107,17 +107,23 @@ _This matters because the route planner is dependent on the idea that the travel
 > State the failure mode. Then give a concrete counter-example using specific node names
 > or costs (you may use the illustration example from the spec). Three to five bullets.
 
-- **The failure mode:** _Your answer here._
-- **Counter-example setup:** _Your answer here._
-- **What greedy picks:** _Your answer here._
-- **What optimal picks:** _Your answer here._
-- **Why greedy loses:** _Your answer here._
+- **The failure mode:** 
+  - _A greedy strategy can fail because the locally cheapest relic choice may create a more expensive total route later._
+- **Counter-example setup:** 
+  - _Let's assume S connects to some relic node B with a cost of 1 and to C with a cost of 2._
+  - But, the paths coming out of node B are more expensive, while paths from C to the remaining relic nodes and the exit are cheaper.
+- **What greedy picks:** 
+  - _Greedy would choose relic B first because it is the cheapest option that is reachable from the starting node._
+- **What optimal picks:** 
+  - _Instead of choosing the cheapest immediate relic, the optimal solution would select C first to minimize the total travel cost._
+- **Why greedy loses:** 
+  - _Greedy loses because it only considers the current cheapest cost and ignores how future path costs affect the overall fuel consumption._
 
 ### What the Algorithm Must Explore
 
 > One bullet. Must use the word "order."
 
-- _Your answer here._
+- _The algorithm must explore different visitation orders because each order can lead to a different total fuel cost._
 
 ---
 
@@ -128,30 +134,30 @@ _This matters because the route planner is dependent on the idea that the travel
 > Document the three components of your search state as a table.
 > Variable names here must match exactly what you use in torchbearer.py.
 
-| Component | Variable name in code | Data type | Description |
-|---|---|---|---|
-| Current location | | | |
-| Relics already collected | | | |
-| Fuel cost so far | | | |
+| Component | Variable name in code  | Data type | Description                                             |
+|---|------------------------|-----|---------------------------------------------------------|
+| Current location | 'current_loc'          | node | The current node where the route search is taking place |
+| Relics already collected | 'relics_visited_order' | list | Contains the order in which the relics were collected   |
+| Fuel cost so far | 'cost_so_far'           | int | Contains the total fuel cost by that current route      |
 
 ### Part 5b: Data Structure for Visited Relics
 
 > Fill in the table.
 
-| Property | Your answer |
-|---|---|
-| Data structure chosen | |
-| Operation: check if relic already collected | Time complexity: |
-| Operation: mark a relic as collected | Time complexity: |
-| Operation: unmark a relic (backtrack) | Time complexity: |
-| Why this structure fits | |
+| Property | Your answer                                                                                            |
+|---|--------------------------------------------------------------------------------------------------------|
+| Data structure chosen | Set                                                                                                    |
+| Operation: check if relic already collected | Time complexity: O(1)                                                                                  |
+| Operation: mark a relic as collected | Time complexity: O(1)                                                                                  |
+| Operation: unmark a relic (backtrack) | Time complexity: O(1)                                                                                  |
+| Why this structure fits | A set is useful because relics can be checked, added, and removed during the backtracking of recursion |
 
 ### Part 5c: Worst-Case Search Space
 
 > Two bullets.
 
-- **Worst-case number of orders considered:** _Your answer (in terms of k)._
-- **Why:** _One-line justification._
+- **Worst-case number of orders considered:** _O(k!) with k being the number of relics._
+- **Why:** _Worst case scenario, the algorithm would need to try each and every order of visiting the relic chambers._
 
 ---
 
