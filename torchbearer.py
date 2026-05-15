@@ -225,6 +225,8 @@ def find_optimal_route(dist_table, spawn, relics, exit_node):
     # Recursive search begins from the starting point
     _explore(dist_table, spawn, relics_remaining, relics_visited_order, cost_so_far, exit_node, best)
 
+    return best[0], best[1]
+
 
 def _explore(dist_table, current_loc, relics_remaining, relics_visited_order,
              cost_so_far, exit_node, best):
@@ -303,23 +305,12 @@ def _explore(dist_table, current_loc, relics_remaining, relics_visited_order,
 # =============================================================================
 
 def solve(graph, spawn, relics, exit_node):
-    """
-    Parameters
-    ----------
-    graph : dict[node, list[tuple[node, int]]]
-    spawn : node
-    relics : list[node]
-    exit_node : node
 
-    Returns
-    -------
-    tuple[float, list[node]]
-        (minimum_fuel_cost, ordered_relic_list)
-        Returns (float('inf'), []) if no valid route exists.
+    # Precomputes the shortest distances between the nodes
+    dist_table = precompute_distances(graph, spawn, relics, exit_node)
 
-    TODO
-    """
-    pass
+    # Recursive search --> finds minimum costing route
+    return find_optimal_route(dist_table, spawn, relics, exit_node)
 
 
 # =============================================================================
